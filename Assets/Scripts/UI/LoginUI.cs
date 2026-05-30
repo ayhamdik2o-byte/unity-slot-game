@@ -102,7 +102,7 @@ public class LoginUI : MonoBehaviour
 
         if (password.Length < 6)
         {
-            ShowLoginError("❌ كلمة المرور ي��ب أن تكون 6 أحرف على الأقل");
+            ShowLoginError("❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل");
             return false;
         }
 
