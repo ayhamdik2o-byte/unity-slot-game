@@ -1,0 +1,13 @@
+{
+  "companyName": "Queensati Games",
+  "productName": "Queensati",
+  "defaultIcon": "Assets/Sprites/icon.png",
+  "defaultCursor": "Assets/Sprites/cursor.png",
+  "cursorHotspot": {
+    "x": 0,
+    "y": 0
+  },
+  "version": "1.0.0",
+  "bundleVersion": "1.0",
+  "bundleVersionCode": 1
+}
