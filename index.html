@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queensati - لعبة السلوت</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7B2CBF;
+            --primary-light: #C77DFF;
+            --gold: #FFD60A;
+            --dark: #1A1A1A;
+            --white: #FFFFFF;
+            --green: #06D6A0;
+            --red: #EF476F;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a1a 100%);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ============ شاشة التسجيل ============ */
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            height: 100%;
+        }
+
+        .auth-screen.hidden {
+            display: none;
+        }
+
+        .logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .app-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 214, 10, 0.5);
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: var(--primary-light);
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--primary-light);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(255, 214, 10, 0.3);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .auth-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(123, 44, 191, 0.3);
+        }
+
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toggle-form {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .toggle-form a {
+            color: var(--gold);
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-form a:hover {
+            color: var(--primary-light);
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .message.error {
+            background: rgba(239, 71, 111, 0.2);
+            color: #FF6B6B;
+            border: 1px solid var(--red);
+        }
+
+        .message.success {
+            background: rgba(6, 214, 160, 0.2);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        /* ============ شاشة اللعبة ============ */
+        .game-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a1a 100%);
+        }
+
+        .game-screen.hidden {
+            display: none;
+        }
+
+        .top-bar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-name {
+            font-size: 14px;
+            color: var(--primary-light);
+            margin-bottom: 4px;
+        }
+
+        .player-points {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .top-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .top-buttons button {
+            padding: 8px 12px;
+            background: var(--primary);
+            border: none;
+            border-radius: 6px;
+            color: var(--white);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .top-buttons button:hover {
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .slot-machine {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .reels-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .reel {
+            width: 70px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 214, 10, 0.2);
+        }
+
+        .reel:hover {
+            transform: scale(1.05);
+        }
+
+        .reel.spinning {
+            animation: spin 0.1s linear infinite;
+        }
+
+        @keyframes spin {
+            0%, 100% { transform: rotateY(0deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.05); }
+        }
+
+        .result-display {
+            min-height: 40px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 214, 10, 0.3);
+        }
+
+        .controls {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-top: 2px solid var(--primary);
+        }
+
+        .bet-control {
+            margin-bottom: 15px;
+        }
+
+        .bet-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .bet-label-text {
+            color: var(--primary-light);
+        }
+
+        .bet-amount {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .bet-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--primary);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .bet-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 214, 10, 0.5);
+        }
+
+        .bet-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 214, 10, 0.5);
+        }
+
+        .bet-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .bet-buttons button {
+            flex: 1;
+            padding: 8px;
+            background: var(--primary);
+            border: 1px solid var(--primary-light);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bet-buttons button:hover {
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .spin-button {
+            background: linear-gradient(135deg, var(--gold) 0%, #FFA500 100%);
+            color: var(--dark);
+        }
+
+        .spin-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 214, 10, 0.4);
+        }
+
+        .spin-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .daily-challenge-button {
+            background: linear-gradient(135deg, var(--green) 0%, #00B8A0 100%);
+            color: var(--dark);
+        }
+
+        .daily-challenge-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(6, 214, 160, 0.4);
+        }
+
+        .logout-button {
+            background: var(--red);
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background: #FF5252;
+            transform: scale(1.05);
+        }
+
+        /* ============ شاشة الترتيب ============ */
+        .leaderboard-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .leaderboard-screen.hidden {
+            display: none;
+        }
+
+        .leaderboard-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-header h1 {
+            font-size: 24px;
+            color: var(--gold);
+        }
+
+        .leaderboard-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(123, 44, 191, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-entry:hover {
+            background: rgba(123, 44, 191, 0.2);
+            transform: translateX(5px);
+        }
+
+        .rank {
+            font-size: 20px;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .rank.first {
+            font-size: 24px;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--white);
+        }
+
+        .leaderboard-points {
+            font-size: 14px;
+            color: var(--primary-light);
+            margin-top: 4px;
+        }
+
+        .leaderboard-points strong {
+            color: var(--gold);
+        }
+
+        /* ============ حالات مختلفة ============ */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--gold);
+            animation: spin-loader 0.8s linear infinite;
+        }
+
+        @keyframes spin-loader {
+            to { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a1a 100%);
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            max-width: 80%;
+            text-align: center;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            font-size: 16px;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .modal-close:hover {
+            background: #FF5252;
+        }
+
+        .modal-confirm {
+            background: var(--green);
+            color: var(--dark);
+        }
+
+        .modal-confirm:hover {
+            background: #05c98e;
+        }
+
+        /* ============ Responsive ============ */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .reel {
+                width: 60px;
+                height: 90px;
+                font-size: 32px;
+            }
+
+            .app-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- شاشة التسجيل -->
+        <div id="authScreen" class="auth-screen">
+            <!-- نموذج الدخول -->
+            <div id="loginForm">
+                <div class="logo">🎰</div>
+                <div class="app-title">Queensati</div>
+                <div class="app-subtitle">لعبة السلوت الممتعة</div>
+
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" placeholder="أدخل بريدك الإلكتروني">
+                </div>
+
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور">
+                </div>
+
+                <button class="auth-button" id="loginBtn">دخول</button>
+
+                <div class="toggle-form">
+                    ليس لديك حساب؟ <a onclick="toggleForms()">إنشاء حساب جديد</a>
+                </div>
+
+                <div class="message" id="loginMessage"></div>
+            </div>
+
+            <!-- نموذج التسجيل -->
+            <div id="registerForm" style="display: none;">
+                <div class="logo">🎰</div>
+                <div class="app-title">Queensati</div>
+                <div class="app-subtitle">إنشاء حساب جديد</div>
+
+                <div class="form-group">
+                    <label>اسم المستخدم</label>
+                    <input type="text" id="regUsername" placeholder="اختر اسماً فريداً">
+                </div>
+
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="regEmail" placeholder="أدخل بريدك الإلكتروني">
+                </div>
+
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="regPassword" placeholder="أنشئ كلمة مرور قوية">
+                </div>
+
+                <div class="form-group">
+                    <label>تأكيد كلمة المرور</label>
+                    <input type="password" id="regConfirmPassword" placeholder="أعد إدخال كلمة المرور">
+                </div>
+
+                <button class="auth-button" id="registerBtn">إنشاء حساب</button>
+
+                <div class="toggle-form">
+                    لديك حساب بالفعل؟ <a onclick="toggleForms()">تسجيل الدخول</a>
+                </div>
+
+                <div class="message" id="registerMessage"></div>
+            </div>
+        </div>
+
+        <!-- شاشة اللعبة -->
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="top-bar">
+                <div class="player-info">
+                    <div class="player-name" id="playerName">مرحباً</div>
+                    <div class="player-points" id="playerPoints">0 نقطة</div>
+                </div>
+                <div class="top-buttons">
+                    <button onclick="showLeaderboard()">🏆 الترتيب</button>
+                    <button class="logout-button" onclick="logout()">تسجيل خروج</button>
+                </div>
+            </div>
+
+            <div class="slot-machine">
+                <div class="result-display" id="resultDisplay"></div>
+
+                <div class="reels-container">
+                    <div class="reel" id="reel1">🍒</div>
+                    <div class="reel" id="reel2">🔔</div>
+                    <div class="reel" id="reel3">7️⃣</div>
+                    <div class="reel" id="reel4">💎</div>
+                    <div class="reel" id="reel5">🍀</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="bet-control">
+                    <div class="bet-label">
+                        <span class="bet-label-text">الرهان:</span>
+                        <span class="bet-amount" id="betDisplay">100 نقطة</span>
+                    </div>
+                    <input type="range" class="bet-slider" id="betSlider" min="10" max="1000" value="100">
+                </div>
+
+                <div class="bet-buttons">
+                    <button onclick="setBetMin()">أقل رهان</button>
+                    <button onclick="setBetMax()">أقصى رهان</button>
+                    <button onclick="completeDailyChallenge()" class="daily-challenge-button">🎯 تحدي اليوم</button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="spin-button" id="spinBtn" onclick="spin()">دوران</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة الترتيب -->
+        <div id="leaderboardScreen" class="leaderboard-screen hidden">
+            <div class="leaderboard-header">
+                <h1>🏆 الترتيب العام</h1>
+                <button onclick="backToGame()" style="background: var(--primary); border: none; padding: 8px 16px; border-radius: 6px; color: var(--white); cursor: pointer;">رجوع</button>
+            </div>
+            <div class="leaderboard-content" id="leaderboardContent">
+                <div class="loading-spinner"></div> جاري التحميل...
+            </div>
+        </div>
+    </div>
+
+    <!-- موdale للرسائل -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">🎉 فوز!</h2>
+            <p id="modalMessage">تهانينا! لقد فزت!</p>
+            <div class="modal-buttons">
+                <button class="modal-confirm" onclick="closeModal()">حسناً</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // البيانات
+        let gameData = {
+            token: null,
+            userId: null,
+            username: null,
+            points: 10000,
+            currentBet: 100,
+            backendURL: 'http://localhost:3000/api' // عدل هنا
+        };
+
+        const symbols = ['🍒', '🔔', '7️⃣', '💎', '🍀'];
+
+        // تبديل نماذج التسجيل
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // تسجيل جديد
+        document.getElementById('registerBtn').addEventListener('click', async () => {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (!username || !email || !password || !confirmPassword) {
+                showMessage('registerMessage', '❌ أدخل جميع البيانات', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('registerMessage', '❌ كلمات المرور غير متطابقة', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('registerMessage', '❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${gameData.backendURL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                if (response.ok) {
+                    showMessage('registerMessage', '✅ تم التسجيل بنجاح! تسجيل الدخول الآن...', 'success');
+                    setTimeout(toggleForms, 1000);
+                } else {
+                    showMessage('registerMessage', '❌ فشل التسجيل. البريد موجود بالفعل', 'error');
+                }
+            } catch (error) {
+                showMessage('registerMessage', '❌ خطأ في الاتصال. تأكد من عنوان الخادم', 'error');
+            }
+        });
+
+        // تسجيل الدخول
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showMessage('loginMessage', '❌ أدخل البريد وكلمة المرور', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${gameData.backendURL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    gameData.token = data.token;
+                    gameData.userId = data.user.id;
+                    gameData.username = data.user.username;
+                    gameData.points = data.user.points;
+                    
+                    showMessage('loginMessage', '✅ تسجيل دخول ناجح! جاري التحميل...', 'success');
+                    setTimeout(showGameScreen, 1000);
+                } else {
+                    showMessage('loginMessage', '❌ بيانات الدخول غير صحيحة', 'error');
+                }
+            } catch (error) {
+                showMessage('loginMessage', '❌ خطأ في الاتصال. تأكد من عنوان الخادم', 'error');
+            }
+        });
+
+        // عرض شاشة اللعبة
+        function showGameScreen() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            document.getElementById('playerName').textContent = `مرحباً ${gameData.username}`;
+            updatePoints();
+        }
+
+        // تحديث النقاط
+        function updatePoints() {
+            document.getElementById('playerPoints').textContent = `${gameData.points.toLocaleString()} نقطة`;
+        }
+
+        // Slider الرهان
+        document.getElementById('betSlider').addEventListener('input', (e) => {
+            gameData.currentBet = parseInt(e.target.value);
+            document.getElementById('betDisplay').textContent = `${gameData.currentBet} نقطة`;
+        });
+
+        // الرهان الأقل والأكثر
+        function setBetMin() {
+            gameData.currentBet = 10;
+            document.getElementById('betSlider').value = 10;
+            document.getElementById('betDisplay').textContent = '10 نقطة';
+        }
+
+        function setBetMax() {
+            gameData.currentBet = 1000;
+            document.getElementById('betSlider').value = 1000;
+            document.getElementById('betDisplay').textContent = '1000 نقطة';
+        }
+
+        // الدوران
+        async function spin() {
+            if (gameData.points < gameData.currentBet) {
+                showResultMessage('❌ نقاط غير كافية!', '#FF6B6B');
+                return;
+            }
+
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = true;
+
+            // تأثير الدوران
+            const reels = document.querySelectorAll('.reel');
+            reels.forEach(reel => reel.classList.add('spinning'));
+
+            // محاكاة الدوران
+            setTimeout(async () => {
+                reels.forEach(reel => reel.classList.remove('spinning'));
+
+                try {
+                    const response = await fetch(`${gameData.backendURL}/game/spin`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${gameData.token}`
+                        },
+                        body: JSON.stringify({ betAmount: gameData.currentBet })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // عرض النتائج
+                        displayReels(data.reels);
+                        gameData.points = data.newBalance;
+                        updatePoints();
+
+                        // إظهار الرسالة
+                        let message = '😔 أفضل حظاً في المرة القادمة';
+                        let color = '#FF6B6B';
+
+                        if (data.result === 'BIG_WIN') {
+                            message = '🎉 فوز كبير!';
+                            color = '#FFD60A';
+                        } else if (data.result === 'WIN') {
+                            message = '✨ فوز!';
+                            color = '#06D6A0';
+                        }
+
+                        showResultMessage(message, color);
+                        document.getElementById('resultDisplay').textContent = `+${data.winAmount} نقطة`;
+                    }
+                } catch (error) {
+                    showResultMessage('❌ خطأ في الاتصال', '#FF6B6B');
+                }
+
+                spinBtn.disabled = false;
+            }, 1500);
+        }
+
+        // عرض النتائج
+        function displayReels(reels) {
+            reels.forEach((symbol, index) => {
+                document.getElementById(`reel${index + 1}`).textContent = symbol;
+            });
+        }
+
+        // عرض الرسالة
+        function showResultMessage(message, color) {
+            const display = document.getElementById('resultDisplay');
+            display.textContent = message;
+            display.style.color = color;
+            setTimeout(() => {
+                display.textContent = '';
+            }, 2000);
+        }
+
+        // تحدي اليوم
+        async function completeDailyChallenge() {
+            try {
+                const response = await fetch(`${gameData.backendURL}/game/daily-challenge`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${gameData.token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    gameData.points += data.bonusPoints;
+                    updatePoints();
+                    showResultMessage(`✅ +${data.bonusPoints} نقطة!`, '#06D6A0');
+                } else {
+                    showResultMessage('❌ تم إكمال التحدي بالفعل اليوم', '#FF6B6B');
+                }
+            } catch (error) {
+                showResultMessage('❌ خطأ في الاتصال', '#FF6B6B');
+            }
+        }
+
+        // الترتيب
+        function showLeaderboard() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('leaderboardScreen').classList.remove('hidden');
+            loadLeaderboard();
+        }
+
+        async function loadLeaderboard() {
+            const content = document.getElementById('leaderboardContent');
+            content.innerHTML = '<div class="loading-spinner"></div> جاري التحميل...';
+
+            try {
+                const response = await fetch(`${gameData.backendURL}/leaderboard/top`);
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    content.innerHTML = '';
+                    data.forEach((entry, index) => {
+                        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+                        const entryHTML = `
+                            <div class="leaderboard-entry">
+                                <div class="rank">${medal}</div>
+                                <div class="leaderboard-info">
+                                    <div class="leaderboard-name">${entry.username}</div>
+                                    <div class="leaderboard-points">النقاط: <strong>${entry.points.toLocaleString()}</strong></div>
+                                </div>
+                            </div>
+                        `;
+                        content.innerHTML += entryHTML;
+                    });
+                }
+            } catch (error) {
+                content.innerHTML = '<p>❌ خطأ في تحميل الترتيب</p>';
+            }
+        }
+
+        function backToGame() {
+            document.getElementById('leaderboardScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            gameData = { ...gameData, token: null, userId: null, username: null, points: 10000 };
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        // رسالة الخطأ/النجاح
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `message ${type}`;
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
